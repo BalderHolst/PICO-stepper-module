@@ -20,7 +20,7 @@
                     pkgsi686Linux.gcc
                 ];
                 shellHook = ''
-                    export PICO_SDK_PATH=pico-sdk
+                    export PICO_SDK_PATH=$(pwd)/pico-sdk
                 '';
             };
         }

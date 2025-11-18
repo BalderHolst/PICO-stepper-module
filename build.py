@@ -15,13 +15,15 @@ import argparse
 
 MICRO_PYTHON_DIR = "micropython"
 PICO_SDK_DIR     = "pico-sdk"
-USER_MODULE_DIR  = "diff_drive_module"
+USER_MODULE_DIR  = "ddrive_module"
+
 
 ROOT_MARKER_FILE = "build.py"
 
 ROOT = path.abspath(path.dirname(__file__))
 
 RP_DIR = path.join(ROOT, MICRO_PYTHON_DIR, "ports", "rp2")
+BUILD_DIR = path.join(ROOT, "build")
 
 # Colors
 BLUE = "\033[94m"
@@ -72,8 +74,15 @@ def build_micropython():
          '-j', str(multiprocessing.cpu_count() - 1),
          ], cwd=RP_DIR)
 
+    if path.exists(BUILD_DIR):
+        shutil.rmtree(BUILD_DIR)
+
+    shutil.copytree(path.join(RP_DIR, "build-RPI_PICO"), BUILD_DIR)
+
+
 def clean_micropython():
     cmd(["make", "clean"], cwd=RP_DIR)
+    shutil.rmtree(BUILD_DIR)
 
 def flash_micropython():
     ensure_exe_installed(["picotool"])
