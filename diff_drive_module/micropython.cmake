@@ -4,4 +4,4 @@
 # used to prefix subdirectories.
 
 # Add the C example.
-include(${CMAKE_CURRENT_LIST_DIR}/diff_drive/micropython.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/diff_drive_module/micropython.cmake)

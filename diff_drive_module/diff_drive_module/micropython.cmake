@@ -3,7 +3,7 @@ add_library(usermod_diff_drive INTERFACE)
 
 # Add our source files to the lib
 target_sources(usermod_diff_drive INTERFACE
-    ${CMAKE_CURRENT_LIST_DIR}/diff_drive_mod.c
+    ${CMAKE_CURRENT_LIST_DIR}/diff_drive_module.c
 )
 
 # Add the current directory as an include directory.

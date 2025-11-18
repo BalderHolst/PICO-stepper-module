@@ -15,7 +15,7 @@ import argparse
 
 MICRO_PYTHON_DIR = "micropython"
 PICO_SDK_DIR     = "pico-sdk"
-USER_MODULE_DIR  = "diff_drive"
+USER_MODULE_DIR  = "diff_drive_module"
 
 ROOT_MARKER_FILE = "build.py"
 

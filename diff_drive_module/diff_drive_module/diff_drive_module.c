@@ -13,7 +13,7 @@ static mp_obj_t example_add_ints(mp_obj_t a_obj, mp_obj_t b_obj) {
     (void)a;  // Suppress unused variable warning.
 
     // Calculate the addition and convert to MicroPython object.
-    return mp_obj_new_int(b);
+    return mp_obj_new_int(b*2);
 }
 // Define a Python reference to the function above.
 static MP_DEFINE_CONST_FUN_OBJ_2(example_add_ints_obj, example_add_ints);
@@ -164,11 +164,11 @@ static const mp_rom_map_elem_t example_module_globals_table[] = {
 };
 static MP_DEFINE_CONST_DICT(example_module_globals, example_module_globals_table);
 
-// Define module object.
-const mp_obj_module_t example_user_cmodule = {
+// Define python module object.
+const mp_obj_module_t cmodule = {
     .base = { &mp_type_module },
     .globals = (mp_obj_dict_t *)&example_module_globals,
 };
 
 // Register the module to make it available in Python.
-MP_REGISTER_MODULE(MP_QSTR_cexample, example_user_cmodule);
+MP_REGISTER_MODULE(MP_QSTR_diff_drive, cmodule);
