@@ -179,6 +179,7 @@ static void send_cmd(DiffDrive * ddrive, DiffDriveCmd cmd) {
         tight_loop_contents();
     }
     ddrive->next_cmd = cmd;
+    ddrive->new_cmd_available = true;
 }
 
 void ddrive_stop(DiffDrive * ddrive) {

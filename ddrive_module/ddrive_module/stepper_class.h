@@ -17,9 +17,8 @@ typedef struct _mp_obj_Stepper_t {
 } mp_obj_Stepper;
 
 // `Stepper` class
-static mp_obj_t Stepper_make_new(const mp_obj_type_t *type,
-                                 size_t n_args, size_t n_kw,
-                                 const mp_obj_t *args) {
+static mp_obj_t Stepper_make_new(const mp_obj_type_t *type, size_t n_args,
+        size_t n_kw, const mp_obj_t *args) {
 
     mp_arg_check_num(n_args, n_kw, 2, 2, false);
 

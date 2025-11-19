@@ -14,6 +14,8 @@ target_include_directories(usermod_ddrive INTERFACE
 # Link with the ddrive library.
 target_link_libraries(usermod_ddrive INTERFACE
     ddrive
+    pico_stdlib
+    pico_multicore
 )
 
 # Link our INTERFACE library to the usermod target.
