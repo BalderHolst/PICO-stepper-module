@@ -28,9 +28,10 @@ motor = stepper.Stepper([0, 1, 2, 3], STEPS)
 end = time.time() + 5
 while time.time() < end:
 
-    # Step the motors
+    # Step the motor forwards (`True`) with 20% (`0.2`) power
     motor.step(True, 0.2)
 
+    # Sleep before next step, this delay sets the motor speed
     time.sleep_us(1000)
 
 # Stop the stepper, releasing its coils
