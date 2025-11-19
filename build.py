@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Script for building Micropython with the `diff_drive` module.
+Script for building Micropython with the `stepper` module.
 """
 
 import multiprocessing
