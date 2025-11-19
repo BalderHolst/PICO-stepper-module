@@ -117,7 +117,7 @@ To flash the firmware to a PICO do the following:
 1. Disconnect the PICO if it is on
 2. Hold down the BOOTSEL button on the PICO
 3. While holding, connect the PICO to the computer through USB
-4. You can not release the BOOTSEL button
+4. You can now release the BOOTSEL button
 5. Run: `./build.py --flash` (this will also rebuild the firmware if needed)
 
 
