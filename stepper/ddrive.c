@@ -10,15 +10,15 @@
 
 #define CLAMP(x, lower, upper) ((x) < (lower) ? (lower) : ((x) > (upper) ? (upper) : (x)))
 
-void ddrive_init(DiffDrive * ddrive, int * lpins, int * rpins) {
-    float * buf = malloc(sizeof(float) * DDRIVE_STEPS_PR_SEQ * STEPPER_PINS);
-    PWMSequence seq = stepper_generate_seq(DDRIVE_STEPS_PR_SEQ, buf);
+void ddrive_init(DiffDrive * ddrive, int * lpins, int * rpins, size_t steps_pr_seq) {
+    float * buf = malloc(sizeof(float) * steps_pr_seq * STEPPER_PINS);
+    PWMSequence seq = stepper_generate_seq(steps_pr_seq, buf);
     ddrive_init_with_seq(ddrive, lpins, rpins, seq);
 }
 
 void ddrive_init_with_seq(DiffDrive * ddrive, int * lpins, int * rpins, PWMSequence seq) {
-    stepper_init_with_seq(&ddrive->lstepper ,lpins, DDRIVE_STEPS_PR_SEQ, seq);
-    stepper_init_with_seq(&ddrive->rstepper, rpins, DDRIVE_STEPS_PR_SEQ, seq);
+    stepper_init_with_seq(&ddrive->lstepper ,lpins, seq);
+    stepper_init_with_seq(&ddrive->rstepper, rpins, seq);
 
     ddrive->lrpm     = 0;
     ddrive->rrpm     = 0;
@@ -75,8 +75,8 @@ void ddrive_handle_command(DiffDrive * ddrive, DiffDriveCmd * cmd) {
     }
 }
 
-const uint64_t MAX_STEP_US  = 100;
-const uint64_t ZERO_STEP_US = 100;
+const uint MAX_SEQ_US  = 10000;
+const uint ZERO_STEP_US = 100;
 
 void ddrive_task(DiffDrive * ddrive) {
 
@@ -132,15 +132,19 @@ void ddrive_task(DiffDrive * ddrive) {
         return;
     };
 
-    us_pr_step = MIN((60 * 1e6) / (DDRIVE_STEPS_PR_REV * fast_rpm), MAX_STEP_US);
+    uint steps_pr_seq = ddrive->rstepper.sequence.length;
+    uint steps_pr_rev = steps_pr_seq * STEPPER_SEQS_PER_REV;
+    uint steps_pr_sec = steps_pr_rev * fast_rpm / 60;
+
+    us_pr_step = MIN(1e6 / steps_pr_sec, (float)MAX_SEQ_US / steps_pr_seq);
     ratio      = slow_rpm / fast_rpm;
 
     // Accumulates the fractional steps for the slow stepper
     static float step_acc = 0;
 
     // Update interpolators
-    bool rdone = interp_tick(&ddrive->rinterp, DDRIVE_STEPS_PR_SEQ * us_pr_step);
-    bool ldone = interp_tick(&ddrive->linterp, DDRIVE_STEPS_PR_SEQ * us_pr_step);
+    bool rdone = interp_tick(&ddrive->rinterp, steps_pr_seq * us_pr_step);
+    bool ldone = interp_tick(&ddrive->linterp, steps_pr_seq * us_pr_step);
     ddrive->interp_active = !(rdone && ldone);
 
 
@@ -153,7 +157,7 @@ void ddrive_task(DiffDrive * ddrive) {
     slow_level = CLAMP(slow_level, PWM_MIN, PWM_MAX);
     fast_level = CLAMP(fast_level, PWM_MIN, PWM_MAX);
 
-    for (int i = 0; i < DDRIVE_STEPS_PR_SEQ; i++) {
+    for (int i = 0; i < steps_pr_seq; i++) {
         // Step the fast stepper every iteration
         stepper_step(fast_stepper, fast_dir, fast_level);
 
@@ -173,9 +177,7 @@ void ddrive_task(DiffDrive * ddrive) {
 
 // ==================== COMMANDS ====================
 static void send_cmd(DiffDrive * ddrive, DiffDriveCmd cmd) {
-    while (ddrive->new_cmd_available) {
-        tight_loop_contents();
-    }
+    while (ddrive->new_cmd_available);
     ddrive->next_cmd = cmd;
     ddrive->new_cmd_available = true;
 }

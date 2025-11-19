@@ -49,11 +49,10 @@ static void state_to_levels(float state[STEPPER_PINS], uint16_t levels[STEPPER_P
 void stepper_init(Stepper * stepper, int pins[STEPPER_PINS], int steps_pr_seq) {
     float * buf = malloc(sizeof(float) * steps_pr_seq* STEPPER_PINS);
     PWMSequence seq = stepper_generate_seq(steps_pr_seq, buf);
-    stepper_init_with_seq(stepper, pins, steps_pr_seq, seq);
+    stepper_init_with_seq(stepper, pins, seq);
 }
 
-// TODO: steps_pr_seq is unneeded
-void stepper_init_with_seq(Stepper * stepper, int pins[STEPPER_PINS], int steps_pr_seq, PWMSequence seq) {
+void stepper_init_with_seq(Stepper * stepper, int pins[STEPPER_PINS], PWMSequence seq) {
 
     stepper->pins = pins;
     stepper->sequence = seq;

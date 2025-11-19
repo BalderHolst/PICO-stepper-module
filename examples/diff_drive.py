@@ -9,9 +9,9 @@ import stepper
 RSTEPPER_PINS = [0, 1, 2, 3]
 LSTEPPER_PINS = [7, 6, 5, 4]
 
-STEPS = 12 # 4 = full stepping
+STEPS = 128 # 4 = full stepping
 
-ddrive = stepper.DiffDrive(RSTEPPER_PINS, LSTEPPER_PINS)
+ddrive = stepper.DiffDrive(RSTEPPER_PINS, LSTEPPER_PINS, STEPS)
 
 # The stepping the differential drive is done in a separate thread
 def handle_diff_drive():
@@ -21,14 +21,13 @@ def handle_diff_drive():
 _thread.start_new_thread(handle_diff_drive, ())
 
 # You can now set the motor speeds directly
-ddrive.set_rpm(-30, 50)
-
+ddrive.set_rpm(50, -30)
 time.sleep(1)
 
 # Or set translational and rotational speeds
-for rot in range(-100, 100):
+for rot in range(-200, 200):
     ddrive.set_trans_rot(50.0, float(rot))
-    time.sleep(0.05)
+    time.sleep_ms(10)
 
 time.sleep(1)
 

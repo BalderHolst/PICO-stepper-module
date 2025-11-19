@@ -5,7 +5,7 @@
 
 #define STEPPER_PINS 4
 
-static const int STEPPER_SEQS_PER_RV = 200 / 4;
+static const int STEPPER_SEQS_PER_REV = 200 / 4;
 
 static const uint16_t PWM_WRAP = 5000;              // Set to get >= 20kHz PWM frequency
 static const uint16_t PWM_MAX  = PWM_WRAP * 70/100; // 70% duty cycle
@@ -37,6 +37,6 @@ void stepper_stop(Stepper* stepper);
 
 
 PWMSequence stepper_generate_seq(uint steps, float * table);
-void stepper_init_with_seq(Stepper * stepper, int pins[STEPPER_PINS], int steps_pr_seq, PWMSequence seq);
+void stepper_init_with_seq(Stepper * stepper, int pins[STEPPER_PINS], PWMSequence seq);
 
 #endif // STEPPER_H

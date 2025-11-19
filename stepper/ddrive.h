@@ -4,10 +4,9 @@
 #include "stepper.h"
 #include "interp.h"
 
-static const uint DDRIVE_STEPS_PR_SEQ = 128;
-static const uint DDRIVE_STEPS_PR_REV = DDRIVE_STEPS_PR_SEQ * STEPPER_SEQS_PER_RV;
+static const uint DEFAULT_DDRIVE_STEPS_PR_SEQ = 128;
 
-static const float DDRIVE_MAX_PWM_SPEED = 400.0f;
+static const float DDRIVE_MAX_PWM_SPEED = 300.0f;
 static const float DDRIVE_MIN_PWM_SPEED =   0.0f;
 
 typedef enum {
@@ -56,7 +55,7 @@ typedef struct {
 
 } DiffDrive;
 
-void ddrive_init(DiffDrive * ddrive, int * rpins, int * lpins);
+void ddrive_init(DiffDrive * ddrive, int * lpins, int * rpins, size_t steps_pr_seq);
 void ddrive_init_with_seq(DiffDrive * ddrive, int * rpins, int * lpins, PWMSequence seq);
 
 void ddrive_handle_command(DiffDrive * ddrive, DiffDriveCmd * cmd);

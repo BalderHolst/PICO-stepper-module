@@ -51,7 +51,7 @@ static mp_obj_t Stepper_make_new(const mp_obj_type_t *type, size_t n_args,
     float * buf = m_new(float, steps* STEPPER_PINS);
     PWMSequence seq = stepper_generate_seq(steps, buf);
 
-    stepper_init_with_seq(&self->stepper, pins, steps, seq);
+    stepper_init_with_seq(&self->stepper, pins, seq);
 
     return MP_OBJ_FROM_PTR(self);
 }
