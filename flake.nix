@@ -12,15 +12,14 @@
         {
             devShells.default = pkgs.mkShell {
                 buildInputs = with pkgs; [
-                    thonny
-                    minicom
-                    micropython
-                    cutecom
-                    cmake
-                    clang-tools
-                    picotool
-                    gcc-arm-embedded-14
-                    pkgsi686Linux.gcc
+                    mpremote              # MicroPython CLI remote control tool
+                    thonny                # IDE for MicroPython
+                    minicom               # Serial monitor
+                    picotool              # Raspberry Pi Pico utility
+                    cmake                 # Build system
+                    clang-tools           # C/C++ tools
+                    gcc-arm-embedded-14   # ARM Embedded GCC toolchain
+                    pkgsi686Linux.gcc     # 32-bit GCC toolchain
                 ];
             };
         }
