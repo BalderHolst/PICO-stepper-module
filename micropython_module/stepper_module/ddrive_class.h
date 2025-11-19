@@ -22,13 +22,6 @@ typedef struct _mp_obj_DiffDrive_t {
     DiffDrive * ddrive_ptr;
 } mp_obj_DiffDrive;
 
-volatile bool core1_running = false;
-void core1(void) {
-    // while (1) {
-    //     tight_loop_contents();
-    // }
-}
-
 static mp_obj_t DiffDrive_make_new(const mp_obj_type_t *type,
                                  size_t n_args, size_t n_kw,
                                  const mp_obj_t *args) {
@@ -107,17 +100,17 @@ static void check_initialized(mp_obj_DiffDrive *self) {
     }
 }
 
-static mp_obj_t DiffDrive_start_task(mp_obj_t self) {
-    stdio_init_all();
+static mp_obj_t DiffDrive_task(mp_obj_t self) {
     mp_obj_DiffDrive *ddrive_obj = MP_OBJ_TO_PTR(self);
     check_initialized(ddrive_obj);
-    if (!core1_running) {
-        multicore_launch_core1(core1);
-        core1_running = true;
+
+    while (ddrive_initialized) {
+        ddrive_task(ddrive_obj->ddrive_ptr);
     }
+
     return mp_const_none;
 }
-static MP_DEFINE_CONST_FUN_OBJ_1(DiffDrive_start_task_method, DiffDrive_start_task);
+static MP_DEFINE_CONST_FUN_OBJ_1(DiffDrive_task_method, DiffDrive_task);
 
 
 // ==================== METHODS ====================
@@ -217,7 +210,7 @@ static MP_DEFINE_CONST_FUN_OBJ_KW(DiffDrive_set_trap_trans_rot_method, 4, DiffDr
 
 static const mp_rom_map_elem_t DiffDrive_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR___del__),                MP_ROM_PTR(&DiffDrive_deinit_method)             },
-    { MP_ROM_QSTR(MP_QSTR_start_task),             MP_ROM_PTR(&DiffDrive_start_task_method)         },
+    { MP_ROM_QSTR(MP_QSTR_task),                   MP_ROM_PTR(&DiffDrive_task_method)               },
     { MP_ROM_QSTR(MP_QSTR_stop),                   MP_ROM_PTR(&DiffDrive_stop_method)               },
     { MP_ROM_QSTR(MP_QSTR_set_rpm),                MP_ROM_PTR(&DiffDrive_set_rpm_method)            },
     { MP_ROM_QSTR(MP_QSTR_set_trans_rot),          MP_ROM_PTR(&DiffDrive_set_trans_rot_method)      },
