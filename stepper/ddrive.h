@@ -1,15 +1,11 @@
 #ifndef DIFF_DRIVE_H
 #define DIFF_DRIVE_H
 
-#include <pico/util/queue.h>
-
 #include "stepper.h"
 #include "interp.h"
 
 static const uint DDRIVE_STEPS_PR_SEQ = 128;
 static const uint DDRIVE_STEPS_PR_REV = DDRIVE_STEPS_PR_SEQ * STEPPER_SEQS_PER_RV;
-
-#define DDRIVE_QUEUE_SIZE 10
 
 static const float DDRIVE_MAX_PWM_SPEED = 400.0f;
 static const float DDRIVE_MIN_PWM_SPEED =   0.0f;

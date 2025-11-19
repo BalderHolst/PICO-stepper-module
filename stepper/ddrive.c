@@ -16,8 +16,6 @@ void ddrive_init(DiffDrive * ddrive, int * lpins, int * rpins) {
     ddrive_init_with_seq(ddrive, lpins, rpins, seq);
 }
 
-DiffDriveCmd queue_storage[DDRIVE_QUEUE_SIZE];
-
 void ddrive_init_with_seq(DiffDrive * ddrive, int * lpins, int * rpins, PWMSequence seq) {
     stepper_init_with_seq(&ddrive->lstepper ,lpins, DDRIVE_STEPS_PR_SEQ, seq);
     stepper_init_with_seq(&ddrive->rstepper, rpins, DDRIVE_STEPS_PR_SEQ, seq);
