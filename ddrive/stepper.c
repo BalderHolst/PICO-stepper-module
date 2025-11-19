@@ -52,6 +52,7 @@ void stepper_init(Stepper * stepper, int pins[STEPPER_PINS], int steps_pr_seq) {
     stepper_init_with_seq(stepper, pins, steps_pr_seq, seq);
 }
 
+// TODO: steps_pr_seq is unneeded
 void stepper_init_with_seq(Stepper * stepper, int pins[STEPPER_PINS], int steps_pr_seq, PWMSequence seq) {
 
     stepper->pins = pins;

@@ -3,11 +3,13 @@
 
 #include <pico/stdlib.h>
 
-#include "stepper_class.c"
+#include "stepper_class.h"
+#include "ddrive_class.h"
 
 static const mp_rom_map_elem_t module_globals_table[] = {
-    { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_ddrive) },
-    { MP_ROM_QSTR(MP_QSTR_Stepper),    MP_ROM_PTR(&type_Stepper) },
+    { MP_ROM_QSTR(MP_QSTR___name__),  MP_ROM_QSTR(MP_QSTR_ddrive) },
+    { MP_ROM_QSTR(MP_QSTR_Stepper),   MP_ROM_PTR(&type_Stepper)   },
+    { MP_ROM_QSTR(MP_QSTR_DiffDrive), MP_ROM_PTR(&type_DiffDrive) },
 };
 static MP_DEFINE_CONST_DICT(module_globals, module_globals_table);
 

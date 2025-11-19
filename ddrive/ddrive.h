@@ -9,7 +9,7 @@
 static const uint DDRIVE_STEPS_PR_SEQ = 128;
 static const uint DDRIVE_STEPS_PR_REV = DDRIVE_STEPS_PR_SEQ * STEPPER_SEQS_PER_RV;
 
-static const uint DDRIVE_QUEUE_SIZE = 10;
+#define DDRIVE_QUEUE_SIZE 10
 
 static const float DDRIVE_MAX_PWM_SPEED = 400.0f;
 static const float DDRIVE_MIN_PWM_SPEED =   0.0f;
@@ -50,8 +50,8 @@ typedef struct {
     uint us_pr_step;
     float ratio;
 
-    // Command queue
-    queue_t cmd_queue;
+    DiffDriveCmd next_cmd;
+    bool new_cmd_available;
 
     // For trapezoidal velocity profile
     Interp rinterp;
@@ -60,7 +60,8 @@ typedef struct {
 
 } DiffDrive;
 
-DiffDrive ddrive_init(int * rpins, int * lpins);
+void ddrive_init(DiffDrive * ddrive, int * rpins, int * lpins);
+void ddrive_init_with_seq(DiffDrive * ddrive, int * rpins, int * lpins, PWMSequence seq);
 
 void ddrive_handle_command(DiffDrive * ddrive, DiffDriveCmd * cmd);
 void ddrive_task(DiffDrive * ddrive);

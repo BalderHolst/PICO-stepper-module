@@ -1,7 +1,8 @@
 #include <hardware/gpio.h>
-#include <pico/util/queue.h>
 #include <pico/time.h>
 #include <math.h>
+#include <pico/stdlib.h>
+#include <stdlib.h>
 
 #include "ddrive.h"
 #include "interp.h"
@@ -9,21 +10,26 @@
 
 #define CLAMP(x, lower, upper) ((x) < (lower) ? (lower) : ((x) > (upper) ? (upper) : (x)))
 
-DiffDrive ddrive_init(int * lpins, int * rpins) {
-    DiffDrive ddrive = {0};
+void ddrive_init(DiffDrive * ddrive, int * lpins, int * rpins) {
+    float * buf = malloc(sizeof(float) * DDRIVE_STEPS_PR_SEQ * STEPPER_PINS);
+    PWMSequence seq = stepper_generate_seq(DDRIVE_STEPS_PR_SEQ, buf);
+    ddrive_init_with_seq(ddrive, lpins, rpins, seq);
+}
 
-    stepper_init(&ddrive.lstepper ,lpins, DDRIVE_STEPS_PR_SEQ);
-    stepper_init(&ddrive.rstepper, rpins, DDRIVE_STEPS_PR_SEQ);
+DiffDriveCmd queue_storage[DDRIVE_QUEUE_SIZE];
 
-    ddrive.lrpm     = 0;
-    ddrive.rrpm     = 0;
+void ddrive_init_with_seq(DiffDrive * ddrive, int * lpins, int * rpins, PWMSequence seq) {
+    stepper_init_with_seq(&ddrive->lstepper ,lpins, DDRIVE_STEPS_PR_SEQ, seq);
+    stepper_init_with_seq(&ddrive->rstepper, rpins, DDRIVE_STEPS_PR_SEQ, seq);
 
-    ddrive.linterp   = (Interp){0};
-    ddrive.rinterp   = (Interp){0};
+    ddrive->lrpm     = 0;
+    ddrive->rrpm     = 0;
 
-    queue_init(&ddrive.cmd_queue, sizeof(DiffDriveCmd), DDRIVE_QUEUE_SIZE);
+    ddrive->linterp   = (Interp){0};
+    ddrive->rinterp   = (Interp){0};
 
-    return ddrive;
+    ddrive->new_cmd_available = false;
+    ddrive->next_cmd = DDRIVE_CMD_STOP;
 }
 
 static void stop_interpolators(DiffDrive * ddrive) {
@@ -77,9 +83,9 @@ const uint64_t ZERO_STEP_US = 100;
 void ddrive_task(DiffDrive * ddrive) {
 
     // Handle new command if available
-    static DiffDriveCmd cmd;
-    if (queue_try_remove(&ddrive->cmd_queue, &cmd)) {
-        ddrive_handle_command(ddrive, &cmd);
+    if (ddrive->new_cmd_available) {
+        ddrive_handle_command(ddrive, &ddrive->next_cmd);
+        ddrive->new_cmd_available = false;
     }
 
     static float fast_rpm, slow_rpm, us_pr_step, ratio;
@@ -168,9 +174,15 @@ void ddrive_task(DiffDrive * ddrive) {
 }
 
 // ==================== COMMANDS ====================
+static void send_cmd(DiffDrive * ddrive, DiffDriveCmd cmd) {
+    while (ddrive->new_cmd_available) {
+        tight_loop_contents();
+    }
+    ddrive->next_cmd = cmd;
+}
 
 void ddrive_stop(DiffDrive * ddrive) {
-    queue_add_blocking(&ddrive->cmd_queue, &DDRIVE_CMD_STOP);
+    send_cmd(ddrive, DDRIVE_CMD_STOP);
 }
 
 void ddrive_rpm(DiffDrive * ddrive, float rrpm, float lrpm) {
@@ -179,7 +191,7 @@ void ddrive_rpm(DiffDrive * ddrive, float rrpm, float lrpm) {
         .right = rrpm,
         .left  = lrpm,
     };
-    queue_add_blocking(&ddrive->cmd_queue, &cmd);
+    send_cmd(ddrive, cmd);
 }
 
 void ddrive_trans_rot(DiffDrive * ddrive, float trans, float rot) {
@@ -188,7 +200,7 @@ void ddrive_trans_rot(DiffDrive * ddrive, float trans, float rot) {
         .trans = trans,
         .rot   = rot,
     };
-    queue_add_blocking(&ddrive->cmd_queue, &cmd);
+    send_cmd(ddrive, cmd);
 }
 
 bool * ddrive_trap_rpm(DiffDrive * ddrive, float ltarget, float rtarget, float time) {
@@ -198,7 +210,7 @@ bool * ddrive_trap_rpm(DiffDrive * ddrive, float ltarget, float rtarget, float t
         .rtarget = rtarget,
         .time    = time,
     };
-    queue_add_blocking(&ddrive->cmd_queue, &cmd);
+    send_cmd(ddrive, cmd);
     return &ddrive->interp_active;
 }
 
@@ -210,6 +222,6 @@ bool * ddrive_trap_trans_rot(DiffDrive * ddrive, float trans_target, float rot_t
         .time    = time,
     };
     trans_rot_to_rpm(trans_target, rot_target, &cmd.ltarget, &cmd.rtarget);
-    queue_add_blocking(&ddrive->cmd_queue, &cmd);
+    send_cmd(ddrive, cmd);
     return &ddrive->interp_active;
 }

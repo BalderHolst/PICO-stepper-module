@@ -1,3 +1,6 @@
+#ifndef STEPPER_CLASS_H
+#define STEPPER_CLASS_H
+
 #include "py/obj.h"
 #include "py/runtime.h"
 
@@ -9,8 +12,8 @@
 #define CLAMP(x, lower, upper) ((x) < (lower) ? (lower) : ((x) > (upper) ? (upper) : (x)))
 
 typedef struct _mp_obj_Stepper_t {
-    mp_obj_base_t base;  // MUST be first
-    Stepper stepper;     // Your internal C struct
+    mp_obj_base_t base; // For MicroPython object system
+    Stepper stepper;
 } mp_obj_Stepper;
 
 // `Stepper` class
@@ -57,8 +60,18 @@ static mp_obj_t Stepper_make_new(const mp_obj_type_t *type,
 static mp_obj_t Stepper_deinit(mp_obj_t self_in) {
     mp_obj_Stepper *self = MP_OBJ_TO_PTR(self_in);
 
-    m_del(int, self->stepper.pins, STEPPER_PINS);
-    m_del(float, self->stepper.sequence.items, self->stepper.sequence.length * STEPPER_PINS);
+    if (!self) return mp_const_none;
+
+    if (self->stepper.pins) {
+        m_del(int, self->stepper.pins, STEPPER_PINS);
+        self->stepper.pins = NULL;
+    }
+
+    if (self->stepper.sequence.items) {
+        m_del(float, self->stepper.sequence.items, self->stepper.sequence.length * STEPPER_PINS);
+        self->stepper.sequence.items = NULL;
+        self->stepper.sequence.length = 0;
+    }
 
     return mp_const_none;
 }
@@ -103,3 +116,5 @@ MP_DEFINE_CONST_OBJ_TYPE(
     make_new, Stepper_make_new,
     locals_dict, &Stepper_locals_dict
 );
+
+#endif // STEPPER_CLASS_H
