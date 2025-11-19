@@ -1,9 +1,6 @@
 import _thread
-
 import time
-
-# Import the custom stepper module
-import stepper
+import stepper # Custom C extension
 
 # GPIO pins of the stepper motors
 RSTEPPER_PINS = [0, 1, 2, 3]
@@ -26,7 +23,7 @@ time.sleep(1)
 
 # Or set translational and rotational speeds
 for rot in range(-200, 200):
-    ddrive.set_trans_rot(50.0, float(rot))
+    ddrive.set_trans_rot(50.0, rot)
     time.sleep_ms(10)
 
 time.sleep(1)
