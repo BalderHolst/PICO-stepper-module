@@ -54,13 +54,30 @@ def cmd(command: str | list[str], cwd: str | None = None, ignore_fail=False, **k
     if isinstance(command, str):
         kwargs.setdefault("shell", True)
 
-    res = subprocess.run(command, cwd=cwd, **kwargs)
+    # Force text mode and pipe stdout/stderr
+    kwargs.setdefault("stdout", subprocess.PIPE)
+    kwargs.setdefault("stderr", subprocess.STDOUT)
+    kwargs.setdefault("text", True)
+    kwargs.setdefault("bufsize", 1)  # line-buffered
 
-    if res.returncode != 0 and not ignore_fail:
-        print(f"\nError: Command failed with exit code {res.returncode}")
-        sys.exit(res.returncode)
+    process = subprocess.Popen(command, cwd=cwd, **kwargs)
 
-    return res
+    prefix = "|   "
+
+    # Read stdout line by line in real time
+    for line in process.stdout:
+        print(f"{prefix}{line.rstrip()}")
+
+    process.stdout.close()
+    process.wait()
+
+    print()
+
+    if process.returncode != 0 and not ignore_fail:
+        print(f"{RED}Error: Command failed with exit code {process.returncode}{RESET}")
+        sys.exit(process.returncode)
+
+    return subprocess.CompletedProcess(args=command, returncode=process.returncode)
 
 
 def download_micropython():
