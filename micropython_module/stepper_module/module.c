@@ -1,4 +1,3 @@
-// Include MicroPython API.
 #include "py/obj.h"
 
 #include <pico/stdlib.h>

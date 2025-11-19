@@ -12,12 +12,12 @@ STEPS = 12 # 4 = full stepping
 
 ddrive = stepper.DiffDrive(RSTEPPER_PINS, LSTEPPER_PINS)
 
-# Function that runs in a separate thread
+# The stepping the differential drive is done in a separate thread
 def handle_diff_drive():
-    ddrive.task()
+    # Run the differential drive task loop
+    ddrive.task_loop()
 
 _thread.start_new_thread(handle_diff_drive, ())
-
 
 ddrive.set_rpm(-30.0, 50.0)
 
