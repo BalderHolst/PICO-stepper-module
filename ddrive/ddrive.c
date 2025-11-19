@@ -12,16 +12,14 @@
 DiffDrive ddrive_init(int * lpins, int * rpins) {
     DiffDrive ddrive = {0};
 
-    Stepper lstepper = stepper_init(lpins, DDRIVE_STEPS_PR_SEQ);
-    Stepper rstepper = stepper_init(rpins, DDRIVE_STEPS_PR_SEQ);
+    stepper_init(&ddrive.lstepper ,lpins, DDRIVE_STEPS_PR_SEQ);
+    stepper_init(&ddrive.rstepper, rpins, DDRIVE_STEPS_PR_SEQ);
 
-    ddrive.lstepper = lstepper;
-    ddrive.rstepper = rstepper;
-    ddrive.rrpm     = 0;
     ddrive.lrpm     = 0;
+    ddrive.rrpm     = 0;
 
-    ddrive.rinterp   = (Interp){0};
     ddrive.linterp   = (Interp){0};
+    ddrive.rinterp   = (Interp){0};
 
     queue_init(&ddrive.cmd_queue, sizeof(DiffDriveCmd), DDRIVE_QUEUE_SIZE);
 

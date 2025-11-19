@@ -51,7 +51,7 @@ static mp_obj_t Stepper_make_new(const mp_obj_type_t *type,
 
     float * buf = m_new(float, steps* STEPPER_PINS);
 
-    self->stepper = stepper_init_with_buf(pins, steps, buf);
+    stepper_init_with_buf(&self->stepper, pins, steps, buf);
 
     return MP_OBJ_FROM_PTR(self);
 }

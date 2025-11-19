@@ -29,8 +29,8 @@ typedef struct {
     int t;                // The current step
 } Stepper;
 
-Stepper stepper_init(int pins[STEPPER_PINS], int steps_pr_seq);
-Stepper stepper_init_with_buf(int pins[STEPPER_PINS], int steps_pr_seq, float * buf);
+void stepper_init(Stepper * stepper, int pins[STEPPER_PINS], int steps_pr_seq);
+void stepper_init_with_buf(Stepper * stepper, int pins[STEPPER_PINS], int steps_pr_seq, float * buf);
 void stepper_deinit(Stepper * stepper);
 void stepper_set_pins(Stepper * stepper, uint16_t state[STEPPER_PINS]);
 void stepper_step(Stepper* stepper, bool direction, uint16_t level);

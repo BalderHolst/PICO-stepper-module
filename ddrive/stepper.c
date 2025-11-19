@@ -47,17 +47,16 @@ static void state_to_levels(float state[STEPPER_PINS], uint16_t levels[STEPPER_P
     }
 }
 
-Stepper stepper_init(int pins[STEPPER_PINS], int steps_pr_seq) {
+void stepper_init(Stepper * stepper, int pins[STEPPER_PINS], int steps_pr_seq) {
     float * buf = malloc(sizeof(float) * steps_pr_seq* STEPPER_PINS);
-    return stepper_init_with_buf(pins, steps_pr_seq, buf);
+    stepper_init_with_buf(stepper, pins, steps_pr_seq, buf);
 }
 
-Stepper stepper_init_with_buf(int pins[STEPPER_PINS], int steps_pr_seq, float * buf) {
-    Stepper stepper = {0};
+void stepper_init_with_buf(Stepper * stepper, int pins[STEPPER_PINS], int steps_pr_seq, float * buf) {
 
-    stepper.pins = pins;
-    stepper.sequence = generate_PWM_sequence(steps_pr_seq, buf);
-    stepper.t = 0;
+    stepper->pins = pins;
+    stepper->sequence = generate_PWM_sequence(steps_pr_seq, buf);
+    stepper->t = 0;
 
     for (int i = 0; i < STEPPER_PINS; i++) {
         uint pin = pins[i];
@@ -71,11 +70,9 @@ Stepper stepper_init_with_buf(int pins[STEPPER_PINS], int steps_pr_seq, float * 
         pwm_set_clkdiv(slice_num, 1.0f);
 
         uint16_t levels[STEPPER_PINS] = {0};
-        state_to_levels(stepper.sequence.items, levels, PWM_MIN);
-        stepper_set_pins(&stepper, levels);
+        state_to_levels(stepper->sequence.items, levels, PWM_MIN);
+        stepper_set_pins(stepper, levels);
     }
-
-    return stepper;
 }
 
 void stepper_deinit(Stepper * stepper) {
