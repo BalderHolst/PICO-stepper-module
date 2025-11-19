@@ -87,7 +87,6 @@ static mp_obj_t DiffDrive_task_loop(mp_obj_t self) {
 }
 static MP_DEFINE_CONST_FUN_OBJ_1(DiffDrive_task_loop_method, DiffDrive_task_loop);
 
-
 // ==================== METHODS ====================
 
 // void ddrive_stop(DiffDrive * ddrive);
@@ -103,12 +102,9 @@ static mp_obj_t DiffDrive_rpm(mp_obj_t self_in, mp_obj_t rrpm_obj, mp_obj_t lrpm
 
     mp_obj_DiffDrive *self = MP_OBJ_TO_PTR(self_in);
 
-    // Check that they are all floats
-    if (!mp_obj_is_float(rrpm_obj)) mp_raise_TypeError(MP_ERROR_TEXT("`rrpm` must be a float"));
-    if (!mp_obj_is_float(lrpm_obj)) mp_raise_TypeError(MP_ERROR_TEXT("`lrpm` must be a float"));
-
     float rrpm = mp_obj_get_float(rrpm_obj);
     float lrpm = mp_obj_get_float(lrpm_obj);
+
     ddrive_rpm(&self->ddrive, rrpm, lrpm);
     return mp_const_none;
 }
@@ -118,10 +114,6 @@ static MP_DEFINE_CONST_FUN_OBJ_3(DiffDrive_set_rpm_method, DiffDrive_rpm);
 static mp_obj_t DiffDrive_trans_rot(mp_obj_t self_in, mp_obj_t trans_obj, mp_obj_t rot_obj) {
 
     mp_obj_DiffDrive *self = MP_OBJ_TO_PTR(self_in);
-
-    // Check that they are all floats
-    if (!mp_obj_is_float(trans_obj)) mp_raise_TypeError(MP_ERROR_TEXT("`trans` must be a float"));
-    if (!mp_obj_is_float(rot_obj))   mp_raise_TypeError(MP_ERROR_TEXT("`rot` must be a float"));
 
     float trans = mp_obj_get_float(trans_obj);
     float rot = mp_obj_get_float(rot_obj);
@@ -139,11 +131,6 @@ static mp_obj_t DiffDrive_trap_rpm(size_t n_args, const mp_obj_t *args, mp_map_t
     mp_obj_t time_obj    = args[3];
 
     mp_obj_DiffDrive *self = MP_OBJ_TO_PTR(self_in);
-
-    // Check that they are all floats
-    if (!mp_obj_is_float(rtarget_obj)) mp_raise_TypeError(MP_ERROR_TEXT("`rtarget` must be a float"));
-    if (!mp_obj_is_float(ltarget_obj)) mp_raise_TypeError(MP_ERROR_TEXT("`ltarget` must be a float"));
-    if (!mp_obj_is_float(time_obj))    mp_raise_TypeError(MP_ERROR_TEXT("`time` must be a float"));
 
     float rtarget = mp_obj_get_float(rtarget_obj);
     float ltarget = mp_obj_get_float(ltarget_obj);
@@ -164,11 +151,6 @@ static mp_obj_t DiffDrive_trap_trans_rot(size_t n_args, const mp_obj_t *args, mp
     mp_obj_t time_obj    = args[3];
 
     mp_obj_DiffDrive *self = MP_OBJ_TO_PTR(self_in);
-
-    // Check that they are all floats
-    if (!mp_obj_is_float(trans_obj)) mp_raise_TypeError(MP_ERROR_TEXT("`trans` must be a float"));
-    if (!mp_obj_is_float(rot_obj))   mp_raise_TypeError(MP_ERROR_TEXT("`rot` must be a float"));
-    if (!mp_obj_is_float(time_obj))  mp_raise_TypeError(MP_ERROR_TEXT("`time` must be a float"));
 
     float trans = mp_obj_get_float(trans_obj);
     float rot = mp_obj_get_float(rot_obj);
