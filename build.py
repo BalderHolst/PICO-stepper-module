@@ -54,7 +54,13 @@ def cmd(command: str | list[str], cwd: str | None = None, **kwargs) -> subproces
     if isinstance(command, str):
         kwargs.setdefault("shell", True)
 
-    return subprocess.run(command, cwd=cwd, **kwargs)
+    res = subprocess.run(command, cwd=cwd, **kwargs)
+
+    if res.returncode != 0:
+        print(f"\nError: Command failed with exit code {res.returncode}")
+        sys.exit(res.returncode)
+
+    return res
 
 
 def download_micropython():

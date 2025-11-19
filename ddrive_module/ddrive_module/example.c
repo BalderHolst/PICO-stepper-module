@@ -4,8 +4,6 @@
 // Used to get the time in the Timer class example.
 #include "py/mphal.h"
 
-#include "ddrive.h"
-
 // This is the function which will be called from Python as cexample.add_ints(a, b).
 static mp_obj_t example_add_ints(mp_obj_t a_obj, mp_obj_t b_obj) {
     // Extract the ints from the micropython input objects.
@@ -13,8 +11,6 @@ static mp_obj_t example_add_ints(mp_obj_t a_obj, mp_obj_t b_obj) {
     int b = mp_obj_get_int(b_obj);
 
     (void)a;  // Suppress unused variable warning.
-
-    blink_led(b, 100);
 
     // Calculate the addition and convert to MicroPython object.
     return mp_obj_new_int(b*2);
