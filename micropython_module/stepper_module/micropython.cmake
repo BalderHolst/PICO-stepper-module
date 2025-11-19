@@ -3,7 +3,7 @@ add_library(usermod_stepper INTERFACE)
 
 # Add our source files to the lib
 target_sources(usermod_stepper INTERFACE
-    ${CMAKE_CURRENT_LIST_DIR}/stepper_module.c
+    ${CMAKE_CURRENT_LIST_DIR}/module.c
 )
 
 # Add the current directory as an include directory.

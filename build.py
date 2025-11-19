@@ -8,14 +8,12 @@ import multiprocessing
 import subprocess
 import shutil
 import sys
-import os
 import os.path as path
 import argparse
 
 
 MICRO_PYTHON_DIR = "micropython"
-PICO_SDK_DIR     = "pico-sdk"
-USER_MODULE_DIR  = "stepper_module"
+USER_MODULE_DIR  = "micropython_module"
 
 
 ROOT_MARKER_FILE = "build.py"
