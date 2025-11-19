@@ -15,7 +15,7 @@ import argparse
 
 MICRO_PYTHON_DIR = "micropython"
 PICO_SDK_DIR     = "pico-sdk"
-USER_MODULE_DIR  = "ddrive_module"
+USER_MODULE_DIR  = "stepper_module"
 
 
 ROOT_MARKER_FILE = "build.py"
@@ -98,7 +98,7 @@ def clean_micropython():
 def flash_micropython():
     ensure_exe_installed(["picotool"])
 
-    uf2_path = path.join(RP_DIR, "build-RPI_PICO", "firmware.uf2")
+    uf2_path = path.join(BUILD_DIR, "firmware.uf2")
 
     print("Flashing firmware to PICO requires sudo privileges. "
           "Please review the script before proceeding.")

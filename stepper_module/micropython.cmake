@@ -3,10 +3,10 @@
 # Paths are absolute, and ${CMAKE_CURRENT_LIST_DIR} can be
 # used to prefix subdirectories.
 
-include(${CMAKE_CURRENT_LIST_DIR}/../ddrive/CMakeLists.txt)
+include(${CMAKE_CURRENT_LIST_DIR}/../stepper/CMakeLists.txt)
 
 # Add the C example.
-include(${CMAKE_CURRENT_LIST_DIR}/ddrive_module/micropython.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/stepper_module/micropython.cmake)
 
 # Generate compile_commands.txt
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
