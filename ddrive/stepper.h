@@ -8,8 +8,8 @@
 static const int STEPPER_SEQS_PER_RV = 200 / 4;
 
 static const uint16_t PWM_WRAP = 5000;              // Set to get >= 20kHz PWM frequency
-static const uint16_t PWM_MAX  = PWM_WRAP * 85/100; // 75% duty cycle
-static const uint16_t PWM_MIN  = PWM_WRAP * 20/100; // 15% duty cycle
+static const uint16_t PWM_MAX  = PWM_WRAP * 70/100; // 70% duty cycle
+static const uint16_t PWM_MIN  = PWM_WRAP * 20/100; // 20% duty cycle
 
 enum StepperStepping {
     FULL_STEP    = 1<<2,

@@ -1,10 +1,13 @@
 // Include MicroPython API.
+#include "py/obj.h"
 #include "py/runtime.h"
 
 #include <pico/stdlib.h>
 #include <stdlib.h>
 
 #include "stepper.h"
+
+#define CLAMP(x, lower, upper) ((x) < (lower) ? (lower) : ((x) > (upper) ? (upper) : (x)))
 
 typedef struct _mp_obj_Stepper_t {
     mp_obj_base_t base;  // MUST be first
@@ -63,16 +66,34 @@ static mp_obj_t Stepper_deinit(mp_obj_t self_in) {
 }
 static MP_DEFINE_CONST_FUN_OBJ_1(Stepper_deinit_method, Stepper_deinit);
 
-static mp_obj_t Stepper_test(mp_obj_t self_in) {
+mp_obj_t Stepper_step(mp_obj_t self_in, mp_obj_t direction_obj, mp_obj_t level_obj) {
     mp_obj_Stepper *self = MP_OBJ_TO_PTR(self_in);
-    (void)self;  // Suppress unused variable warning.
-    return mp_obj_new_int(42);
-}
-static MP_DEFINE_CONST_FUN_OBJ_1(Stepper_test_method, Stepper_test);
 
+    bool direction = mp_obj_is_true(direction_obj);
+    float flevel    = mp_obj_get_float(level_obj);
+
+    flevel = CLAMP(flevel, 0.0f, 1.0f);
+
+    uint16_t level = (uint16_t)(flevel * PWM_MAX);
+
+    // Call the C function
+    stepper_step(&self->stepper, direction, level);
+
+    return mp_obj_new_int(self->stepper.t);
+}
+MP_DEFINE_CONST_FUN_OBJ_3(Stepper_step_method, Stepper_step);
+
+mp_obj_t Stepper_stop(mp_obj_t self_in) {
+    mp_obj_Stepper *self = MP_OBJ_TO_PTR(self_in);
+    stepper_stop(&self->stepper);
+    return mp_const_none;
+}
+
+MP_DEFINE_CONST_FUN_OBJ_1(Stepper_stop_method, Stepper_stop);
 
 static const mp_rom_map_elem_t Stepper_locals_dict_table[] = {
-    { MP_ROM_QSTR(MP_QSTR_test), MP_ROM_PTR(&Stepper_test_method) },
+    { MP_ROM_QSTR(MP_QSTR_step),    MP_ROM_PTR(&Stepper_step_method)   },
+    { MP_ROM_QSTR(MP_QSTR_stop),    MP_ROM_PTR(&Stepper_stop_method)   },
     { MP_ROM_QSTR(MP_QSTR___del__), MP_ROM_PTR(&Stepper_deinit_method) },
 };
 static MP_DEFINE_CONST_DICT(Stepper_locals_dict, Stepper_locals_dict_table);
