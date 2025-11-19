@@ -19,13 +19,11 @@ static mp_obj_t Stepper_make_new(const mp_obj_type_t *type,
                                  size_t n_args, size_t n_kw,
                                  const mp_obj_t *args) {
 
-    // Expect 2 args: pins list + steps integer
     mp_arg_check_num(n_args, n_kw, 2, 2, false);
 
     mp_obj_t pins_obj = args[0];
     mp_obj_t steps_obj = args[1];
 
-    // Check pins is list
     if (!mp_obj_is_type(pins_obj, &mp_type_list)) {
         mp_raise_TypeError(MP_ERROR_TEXT("pins must be a list"));
     }
@@ -50,8 +48,9 @@ static mp_obj_t Stepper_make_new(const mp_obj_type_t *type,
     mp_obj_Stepper *self = mp_obj_malloc(mp_obj_Stepper, type);
 
     float * buf = m_new(float, steps* STEPPER_PINS);
+    PWMSequence seq = stepper_generate_seq(steps, buf);
 
-    stepper_init_with_buf(&self->stepper, pins, steps, buf);
+    stepper_init_with_seq(&self->stepper, pins, steps, seq);
 
     return MP_OBJ_FROM_PTR(self);
 }

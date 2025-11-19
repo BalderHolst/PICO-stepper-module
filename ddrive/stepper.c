@@ -16,8 +16,7 @@ const float COIL_PHASES[] = {
     3 * PI / 2,
 };
 
-static PWMSequence generate_PWM_sequence(uint steps, float * table) {
-
+PWMSequence stepper_generate_seq(uint steps, float * table) {
     for (uint step = 0; step < steps; step++) {
         float t = 2 * PI * (float)step / (float)steps;
         for (int coil = 0; coil < STEPPER_PINS; coil++) {
@@ -49,13 +48,14 @@ static void state_to_levels(float state[STEPPER_PINS], uint16_t levels[STEPPER_P
 
 void stepper_init(Stepper * stepper, int pins[STEPPER_PINS], int steps_pr_seq) {
     float * buf = malloc(sizeof(float) * steps_pr_seq* STEPPER_PINS);
-    stepper_init_with_buf(stepper, pins, steps_pr_seq, buf);
+    PWMSequence seq = stepper_generate_seq(steps_pr_seq, buf);
+    stepper_init_with_seq(stepper, pins, steps_pr_seq, seq);
 }
 
-void stepper_init_with_buf(Stepper * stepper, int pins[STEPPER_PINS], int steps_pr_seq, float * buf) {
+void stepper_init_with_seq(Stepper * stepper, int pins[STEPPER_PINS], int steps_pr_seq, PWMSequence seq) {
 
     stepper->pins = pins;
-    stepper->sequence = generate_PWM_sequence(steps_pr_seq, buf);
+    stepper->sequence = seq;
     stepper->t = 0;
 
     for (int i = 0; i < STEPPER_PINS; i++) {
