@@ -9,3 +9,6 @@
 
 /build
 .cache
+
+/micropython
+/pico-sdk

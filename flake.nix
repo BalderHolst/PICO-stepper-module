@@ -19,9 +19,6 @@
                     gcc-arm-embedded-14
                     pkgsi686Linux.gcc
                 ];
-                shellHook = ''
-                    export PICO_SDK_PATH=$(pwd)/pico-sdk
-                '';
             };
         }
     );

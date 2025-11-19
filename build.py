@@ -26,7 +26,8 @@ RP_DIR = path.join(ROOT, MICRO_PYTHON_DIR, "ports", "rp2")
 BUILD_DIR = path.join(ROOT, "build")
 
 # Colors
-BLUE = "\033[94m"
+BLUE  = "\033[94m"
+RED   = "\033[91m"
 RESET = "\033[0m"
 
 def ensure_exe_installed(exes: str | list[str]) -> str:
@@ -40,11 +41,12 @@ def ensure_exe_installed(exes: str | list[str]) -> str:
             missing.append(exe)
 
     if len(missing) > 0:
-        print("Error: Missing required executables:")
+        print(f"\n{RED}Error: Missing required executables:{RESET}")
         for exe in missing:
             print(f" - {exe}")
+        exit(1)
 
-def cmd(command: str | list[str], cwd: str | None = None, **kwargs) -> subprocess.CompletedProcess:
+def cmd(command: str | list[str], cwd: str | None = None, ignore_fail=False, **kwargs) -> subprocess.CompletedProcess:
     if isinstance(command, list):
         if len(command) == 0: raise ValueError("Command list cannot be empty")
         ensure_exe_installed(command[0])
@@ -56,7 +58,7 @@ def cmd(command: str | list[str], cwd: str | None = None, **kwargs) -> subproces
 
     res = subprocess.run(command, cwd=cwd, **kwargs)
 
-    if res.returncode != 0:
+    if res.returncode != 0 and not ignore_fail:
         print(f"\nError: Command failed with exit code {res.returncode}")
         sys.exit(res.returncode)
 
@@ -64,9 +66,12 @@ def cmd(command: str | list[str], cwd: str | None = None, **kwargs) -> subproces
 
 
 def download_micropython():
-    ensure_exe_installed(["git"])
-    print("Cloning MicroPython repository...")
-    print("TODO: implement git clone")
+    if path.exists(MICRO_PYTHON_DIR): return
+    cmd(["git", "clone", "https://github.com/micropython/micropython.git", MICRO_PYTHON_DIR])
+
+def download_pico_sdk():
+    if path.exists(PICO_SDK_DIR): return
+    cmd(["git", "clone", "https://github.com/raspberrypi/pico-sdk", PICO_SDK_DIR])
 
 
 def build_micropython():
@@ -87,8 +92,8 @@ def build_micropython():
 
 
 def clean_micropython():
-    cmd(["make", "clean"], cwd=RP_DIR)
-    shutil.rmtree(BUILD_DIR)
+    cmd(["make", "clean"], cwd=RP_DIR, ignore_fail=True)
+    if path.exists(BUILD_DIR): shutil.rmtree(BUILD_DIR)
 
 def flash_micropython():
     ensure_exe_installed(["picotool"])
@@ -117,6 +122,7 @@ def main():
         clean_micropython()
 
     download_micropython()
+
     build_micropython()
 
     if args.flash:
