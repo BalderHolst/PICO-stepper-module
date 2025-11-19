@@ -27,3 +27,30 @@ jobs:
         with:
           name: firmware
           path: build/firmware.uf2
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write       # Required
+      id-token: write    # Required
+
+    steps:
+      - name: Download firmware artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: firmware
+
+      - name: Create public folder
+        run: |
+          mkdir public
+          mv firmware.uf2 public/
+          echo '<a href="firmware.uf2" download>Download firmware</a>' > public/index.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
