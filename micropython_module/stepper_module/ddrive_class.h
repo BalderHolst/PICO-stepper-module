@@ -133,47 +133,6 @@ static mp_obj_t DiffDrive_trans_rot(mp_obj_t self_in, mp_obj_t trans_obj, mp_obj
 }
 static MP_DEFINE_CONST_FUN_OBJ_3(DiffDrive_set_trans_rot_method, DiffDrive_trans_rot);
 
-// bool * ddrive_trap_rpm(DiffDrive * ddrive, float rtarget, float ltarget, float time);
-static mp_obj_t DiffDrive_trap_rpm(size_t n_args, const mp_obj_t *args, mp_map_t *kw) {
-
-    mp_obj_t self_in     = args[0];
-    mp_obj_t rtarget_obj = args[1];
-    mp_obj_t ltarget_obj = args[2];
-    mp_obj_t time_obj    = args[3];
-
-    mp_obj_DiffDrive *self = MP_OBJ_TO_PTR(self_in);
-
-    float rtarget = mp_obj_get_float(rtarget_obj);
-    float ltarget = mp_obj_get_float(ltarget_obj);
-    float time = mp_obj_get_float(time_obj);
-
-    wait_until_ready(&self->ddrive);
-    bool * active = ddrive_trap_rpm(&self->ddrive, rtarget, ltarget, time);
-    return mp_obj_new_bool(*active);
-}
-
-static MP_DEFINE_CONST_FUN_OBJ_KW(DiffDrive_set_trap_rpm_method, 4, DiffDrive_trap_rpm);
-
-// bool * ddrive_trap_trans_rot(DiffDrive * ddrive, float trans, float rot, float time);
-static mp_obj_t DiffDrive_trap_trans_rot(size_t n_args, const mp_obj_t *args, mp_map_t *kw) {
-
-    mp_obj_t self_in     = args[0];
-    mp_obj_t trans_obj   = args[1];
-    mp_obj_t rot_obj     = args[2];
-    mp_obj_t time_obj    = args[3];
-
-    mp_obj_DiffDrive *self = MP_OBJ_TO_PTR(self_in);
-
-    float trans = mp_obj_get_float(trans_obj);
-    float rot = mp_obj_get_float(rot_obj);
-    float time = mp_obj_get_float(time_obj);
-
-    wait_until_ready(&self->ddrive);
-    bool * active = ddrive_trap_trans_rot(&self->ddrive, trans, rot, time);
-
-    return mp_obj_new_bool(*active);
-}
-static MP_DEFINE_CONST_FUN_OBJ_KW(DiffDrive_set_trap_trans_rot_method, 4, DiffDrive_trap_trans_rot);
 
 static const mp_rom_map_elem_t DiffDrive_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR___del__),                MP_ROM_PTR(&DiffDrive_deinit_method)             },
@@ -181,8 +140,6 @@ static const mp_rom_map_elem_t DiffDrive_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_stop),                   MP_ROM_PTR(&DiffDrive_stop_method)               },
     { MP_ROM_QSTR(MP_QSTR_set_rpm),                MP_ROM_PTR(&DiffDrive_set_rpm_method)            },
     { MP_ROM_QSTR(MP_QSTR_set_trans_rot),          MP_ROM_PTR(&DiffDrive_set_trans_rot_method)      },
-    { MP_ROM_QSTR(MP_QSTR_set_trap_rpm),           MP_ROM_PTR(&DiffDrive_set_trap_rpm_method)       },
-    { MP_ROM_QSTR(MP_QSTR_set_trap_trans_rot),     MP_ROM_PTR(&DiffDrive_set_trap_trans_rot_method) },
 };
 
 static MP_DEFINE_CONST_DICT(DiffDrive_locals_dict, DiffDrive_locals_dict_table);

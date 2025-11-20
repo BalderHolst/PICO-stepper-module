@@ -217,7 +217,7 @@ bool * ddrive_trap_rpm(DiffDrive * ddrive, float ltarget, float rtarget, float t
 
 bool * ddrive_trap_trans_rot(DiffDrive * ddrive, float trans_target, float rot_target, float time) {
     DiffDriveCmd cmd = {
-        .type  = DDRIVE_TRAPEZOID,
+        .type    = DDRIVE_TRAPEZOID,
         .ltarget = 0,
         .rtarget = 0,
         .time    = time,
