@@ -28,8 +28,55 @@ jobs:
           name: firmware
           path: build/firmware.uf2
 
+  generate-version-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Get short Git hash
+        id: get_hash
+        run: |
+          echo "GIT_LONG_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Clone SSL tool
+        run: git clone https://github.com/BalderHolst/ssl ssl
+
+      - name: Build SSL tool
+        run: |
+          cargo build --manifest-path ssl/Cargo.toml --release
+
+      - name: Generate version image
+        run: |
+          echo "${GIT_LONG_HASH}${GIT_LONG_HASH}${GIT_LONG_HASH}${GIT_LONG_HASH}" | \
+              ./ssl/target/release/ssl /dev/stdin -o version-image-large.png -W 1200 -H 1200 \
+
+          echo "${GIT_LONG_HASH}${GIT_LONG_HASH}${GIT_LONG_HASH}${GIT_LONG_HASH}" | \
+              ./ssl/target/release/ssl /dev/stdin -o version-image-small.png -W 32 -H 32
+
+      - name: Upload large version image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: version-image-large
+          path: version-image-large.png
+
+      - name: Upload small version image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: version-image-small
+          path: version-image-small.png
+
   deploy:
-    needs: build
+    needs: 
+      - build
+      - generate-version-image
     runs-on: ubuntu-latest
     permissions:
       pages: write       # Required
@@ -39,21 +86,32 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Get short Git hash
+        id: get_hash
+        run: |
+          echo "GIT_SHORT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
       - name: Download firmware artifact
         uses: actions/download-artifact@v4
         with:
           name: firmware
 
-      - name: Get short Git hash
-        id: get_hash
-        run: |
-          echo "GIT_SHORT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-          echo "GIT_LONG_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
+      - name: Download large version image
+        uses: actions/download-artifact@v4
+        with:
+          name: version-image-large
+
+      - name: Download small version image
+        uses: actions/download-artifact@v4
+        with:
+          name: version-image-small
 
       - name: Create public folder
         run: |
           mkdir public
-          mv firmware.uf2 public/
+          mv firmware.uf2 public/micropython-stepper-${GIT_SHORT_HASH}.uf2
+          mv version-image-small.png public/favicon.ico
+          mv version-image-large.png public/version-image.png
           cat << EOF > public/index.html
           <!DOCTYPE html>
           <html lang="en">
@@ -118,11 +176,25 @@ jobs:
                 <h1>PICO Stepper Module</h1>
                 <div class="version-text">Micropython Firmware (version: ${GIT_SHORT_HASH})</div>
               </div>
-              <img src="version-2.3.1.png" alt="Version Image" class="version-image">
+              <img src="version-image.png" alt="Version Image" class="version-image">
             </div>
 
-            <a href="firmware.uf2" class="download-btn" download>Download</a>
+            <a href="micropython-stepper-${GIT_SHORT_HASH}.uf2" class="download-btn" download>Download</a>
 
+          </body>
+          </html>
+          EOF
+
+      - name: Create redirect for firmware.uf2
+        run: |
+          cat << EOF > public/firmware.uf2
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+          <meta http-equiv="refresh" content="0; url=micropython-stepper-${GIT_SHORT_HASH}.uf2" />
+          </head>
+          <body>
+          <p>If you are not redirected automatically, <a href="micropython-stepper-${GIT_SHORT_HASH}.uf2">click here</a>.</p>
           </body>
           </html>
           EOF
