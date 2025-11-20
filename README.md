@@ -9,7 +9,7 @@ Refer to the [`stepper.pyi`](micropython_module/stepper.pyi) stub file for an AP
 ├── examples            Examples of using the micropython module
 ├── flake.nix           Nix flake for a reproducible dev enviornment
 ├── micropython_module  Python bindings for the stepper library
-└── stepper             Pure C stepper library (Link with PICO C SDK)
+└── stepperlib          Pure C stepper library (Link with PICO C SDK)
 ```
 
 ## Examples

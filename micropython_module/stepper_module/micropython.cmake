@@ -13,7 +13,7 @@ target_include_directories(usermod_stepper INTERFACE
 
 # Link with the stepper library.
 target_link_libraries(usermod_stepper INTERFACE
-    stepper
+    stepperlib
     pico_stdlib
     pico_multicore
 )
