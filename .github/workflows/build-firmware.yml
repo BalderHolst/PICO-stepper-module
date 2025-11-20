@@ -137,7 +137,7 @@ jobs:
               }
               .text-section {
                 text-align: left;
-                margin-right: 30px;
+                margin-right: 60px;
               }
               h1 {
                 font-size: 48px;
@@ -154,18 +154,26 @@ jobs:
                 border-radius: 10px;
                 border: 2px solid #ccc;
               }
+
               .download-btn {
-                padding: 20px 40px;
+                display: inline-block;
+                padding: 10px 20px;
+                margin-top: 30px;
                 font-size: 24px;
+                transition: background-color 0.3s ease;
+                border-radius: 8px;
+                background-color: #007bff;
+              }
+
+              .download-btn:hover {
+                  background-color: #0056b3;
+              }
+
+              a {
                 text-decoration: none;
                 color: white;
-                background-color: #007bff;
-                border-radius: 8px;
-                transition: background-color 0.3s ease;
               }
-              .download-btn:hover {
-                background-color: #0056b3;
-              }
+
             </style>
 
           </head>
@@ -175,11 +183,10 @@ jobs:
               <div class="text-section">
                 <h1>PICO Stepper Module</h1>
                 <div class="version-text">Micropython Firmware (version: ${GIT_SHORT_HASH})</div>
+                <a href="micropython-stepper-${GIT_SHORT_HASH}.uf2" download><div class="download-btn">Download</div></a>
               </div>
               <img src="version-image.png" alt="Version Image" class="version-image">
             </div>
-
-            <a href="micropython-stepper-${GIT_SHORT_HASH}.uf2" class="download-btn" download>Download</a>
 
           </body>
           </html>
