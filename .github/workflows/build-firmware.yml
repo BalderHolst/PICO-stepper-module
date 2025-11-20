@@ -36,16 +36,96 @@ jobs:
       id-token: write    # Required
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       - name: Download firmware artifact
         uses: actions/download-artifact@v4
         with:
           name: firmware
 
+      - name: Get short Git hash
+        id: get_hash
+        run: |
+          echo "GIT_SHORT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "GIT_LONG_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
+
       - name: Create public folder
         run: |
           mkdir public
           mv firmware.uf2 public/
-          echo '<a href="firmware.uf2" download>Download firmware</a>' > public/index.html
+          cat << EOF > public/index.html
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+
+            <title>PICO Stepper Module</title>
+
+            <style>
+              body {
+                padding: 20vh 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                height: 100vh;
+                background-color: #f4f4f4;
+                font-family: Arial, sans-serif;
+              }
+              .container {
+                display: flex;
+                align-items: center;
+                margin-bottom: 40px;
+              }
+              .text-section {
+                text-align: left;
+                margin-right: 30px;
+              }
+              h1 {
+                font-size: 48px;
+                margin: 0;
+              }
+              .version-text {
+                font-size: 24px;
+                margin-top: 5px;
+              }
+              .version-image {
+                width: 200px;
+                height: 200px;
+                object-fit: cover;
+                border-radius: 10px;
+                border: 2px solid #ccc;
+              }
+              .download-btn {
+                padding: 20px 40px;
+                font-size: 24px;
+                text-decoration: none;
+                color: white;
+                background-color: #007bff;
+                border-radius: 8px;
+                transition: background-color 0.3s ease;
+              }
+              .download-btn:hover {
+                background-color: #0056b3;
+              }
+            </style>
+
+          </head>
+
+          <body>
+            <div class="container">
+              <div class="text-section">
+                <h1>PICO Stepper Module</h1>
+                <div class="version-text">Micropython Firmware (version: ${GIT_SHORT_HASH})</div>
+              </div>
+              <img src="version-2.3.1.png" alt="Version Image" class="version-image">
+            </div>
+
+            <a href="firmware.uf2" class="download-btn" download>Download</a>
+
+          </body>
+          </html>
+          EOF
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
