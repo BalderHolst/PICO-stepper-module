@@ -84,11 +84,6 @@ def download_micropython():
     if path.exists(MICRO_PYTHON_DIR): return
     cmd(["git", "clone", "https://github.com/micropython/micropython.git", MICRO_PYTHON_DIR])
 
-def download_pico_sdk():
-    if path.exists(PICO_SDK_DIR): return
-    cmd(["git", "clone", "https://github.com/raspberrypi/pico-sdk", PICO_SDK_DIR])
-
-
 def build_micropython():
     ensure_exe_installed(["make", "arm-none-eabi-gcc"])
 
