@@ -55,11 +55,14 @@ jobs:
 
       - name: Generate version image
         run: |
-          echo "${GIT_LONG_HASH}${GIT_LONG_HASH}${GIT_LONG_HASH}${GIT_LONG_HASH}" | \
-              ./ssl/target/release/ssl /dev/stdin -o version-image-large.png -W 1200 -H 1200 \
 
-          echo "${GIT_LONG_HASH}${GIT_LONG_HASH}${GIT_LONG_HASH}${GIT_LONG_HASH}" | \
-              ./ssl/target/release/ssl /dev/stdin -o version-image-small.png -W 32 -H 32
+          touch input.txt
+          for i in {1..20}; do
+              echo "${GIT_LONG_HASH}" >> input.txt
+          done
+
+          ./ssl/target/release/ssl input.txt -o version-image-large.png -W 1200 -H 1200
+          ./ssl/target/release/ssl input.txt -o version-image-small.png -W 32   -H 32
 
       - name: Upload large version image artifact
         uses: actions/upload-artifact@v4
